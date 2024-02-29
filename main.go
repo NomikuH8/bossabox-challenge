@@ -18,7 +18,11 @@ func main() {
 
 	g := gin.Default()
 
-	port := ":" + os.Getenv("SERVER_PORT")
+	port := os.Getenv("SERVER_PORT")
 
-	g.Run(port)
+	if port == "" {
+		port = "3000"
+	}
+
+	g.Run(":" + port)
 }

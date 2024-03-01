@@ -10,5 +10,7 @@ func RegisterToolRoutes(g *gin.Engine) {
 	{
 		c := controllers.NewToolsController()
 		t.GET("/", c.GetAllTools)
+		t.GET("/:id", c.GetOneTool)
+		t.POST("/", c.InsertNewTool)
 	}
 }

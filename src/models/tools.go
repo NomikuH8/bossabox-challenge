@@ -13,6 +13,7 @@ type ToolsModel interface {
 	GetAllToolTags() (*sql.Rows, error)
 	GetOneTool(int) (*sql.Rows, error)
 	GetOneToolTags(int) (*sql.Rows, error)
+	GetLastTool() (*sql.Rows, error)
 	InsertTool(Tool) (sql.Result, error)
 	InsertToolTag(int, string) (sql.Result, error)
 	UpdateTool(int, Tool) (sql.Result, error)
@@ -26,10 +27,10 @@ type toolsModel struct {
 
 type Tool struct {
 	Id          int      `json:"id"`
-	Title       string   `json:"title"`
-	Link        string   `json:"link"`
-	Description string   `json:"description"`
-	Tags        []string `json:"tags"`
+	Title       string   `json:"title" binding:"required"`
+	Link        string   `json:"link" binding:"required"`
+	Description string   `json:"description" binding:"required"`
+	Tags        []string `json:"tags" binding:"required"`
 }
 
 type ToolTag struct {
@@ -73,7 +74,19 @@ func (tm *toolsModel) GetOneToolTags(toolId int) (rows *sql.Rows, err error) {
 	query := `
 		SELECT *
 		FROM tool_tag
-		WHERE 
+		WHERE $1
+	`
+
+	rows, err = tm.db.Query(query, toolId)
+	return
+}
+
+func (tm *toolsModel) GetLastTool() (rows *sql.Rows, err error) {
+	query := `
+		SELECT *
+		FROM tool
+		ORDER BY id DESC
+		LIMIT 1
 	`
 
 	rows, err = tm.db.Query(query)
@@ -83,13 +96,13 @@ func (tm *toolsModel) GetOneToolTags(toolId int) (rows *sql.Rows, err error) {
 func (tm *toolsModel) InsertTool(tool Tool) (res sql.Result, err error) {
 	query := `
 		INSERT INTO tool (
-			title, link, description, tags
+			title, link, description
 		) VALUES (
-			$1, $2, $3, $4
-		)
+			$1, $2, $3
+		) RETURNING *
 	`
 
-	res, err = tm.db.Exec(query, tool.Title, tool.Link, tool.Description, tool.Tags)
+	res, err = tm.db.Exec(query, tool.Title, tool.Link, tool.Description)
 	return
 }
 

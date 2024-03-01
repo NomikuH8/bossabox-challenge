@@ -134,7 +134,7 @@ func (tc *toolsController) InsertNewTool(c *gin.Context) {
 		tc.checkError(err, c, "Couldn't insert some tags")
 	}
 
-	c.JSON(200, tool)
+	c.JSON(201, tool)
 }
 
 func (tc *toolsController) checkError(err error, c *gin.Context, message string) {

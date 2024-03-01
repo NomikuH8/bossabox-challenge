@@ -1,11 +1,12 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/nomikuh8/bossabox-challenge/src/routes"
 )
 
 func main() {
@@ -13,7 +14,7 @@ func main() {
 
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env:", err)
+		fmt.Println("Starting server with default values for .env")
 	}
 
 	g := gin.Default()
@@ -23,6 +24,8 @@ func main() {
 	if port == "" {
 		port = "3000"
 	}
+
+	routes.RegisterToolRoutes(g)
 
 	g.Run(":" + port)
 }
